@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Decks - Tainted Grail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1c1e1a;
+            --bg-secondary: #252820;
+            --bg-card: #2e332a;
+            --text-primary: #d4cfc4;
+            --text-secondary: #8a8678;
+            --accent: #8b3a3a;
+            --gold: #b8944f;
+            --green: #6b8f71;
+            --border: #3d4238;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('King_Arthur.jpg') center/cover no-repeat fixed;
+            opacity: 0.15;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(28,30,26,0.95) 0%, rgba(28,30,26,0.85) 50%, rgba(28,30,26,0.95) 100%);
+            z-index: -1;
+        }
+
+        /* Navigation */
+        .top-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--accent);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 2.5rem 1rem 1.5rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Search & Filter */
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            padding: 0 1rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .search-bar::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.4rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--gold);
+            color: var(--bg-primary);
+            border-color: var(--gold);
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            gap: 0.5rem;
+        }
+
+        .card-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .card-tag {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        .tag-bargaining { background: rgba(139,58,58,0.3); color: #e07070; border: 1px solid #8b3a3a; }
+        .tag-chronicle { background: rgba(184,148,79,0.2); color: var(--gold); border: 1px solid var(--gold); }
+        .tag-magic { background: rgba(107,143,113,0.3); color: #90c896; border: 1px solid var(--green); }
+        .tag-optional { background: rgba(100,100,180,0.3); color: #a0a0e0; border: 1px solid #6666aa; }
+        .tag-special { background: rgba(180,120,60,0.3); color: #e0b070; border: 1px solid #b07830; }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .card-meta strong {
+            color: var(--text-primary);
+        }
+
+        .card-flavor {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-left: 2px solid var(--border);
+            padding-left: 0.8rem;
+        }
+
+        .card-effects {
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .card-effects strong {
+            color: var(--gold);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 1.8rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .tab-btn { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="tab-buttons">
+            <a href="index.html" class="tab-btn">Reference Guide</a>
+            <a href="index.html#tab-creator" class="tab-btn">Character Creator</a>
+            <a href="index.html#tab-sheet" class="tab-btn">Character Sheet</a>
+            <a href="decks.html" class="tab-btn active">Card Decks</a>
+            <a href="pregens.html" class="tab-btn">Pre-Gen Characters</a>
+            <a href="adventures.html" class="tab-btn">Adventures</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>Card Decks</h1>
+    </div>
+
+    <div class="controls">
+        <input type="text" class="search-bar" id="searchBar" placeholder="Search cards by name or text...">
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="Bargaining">Bargaining</button>
+            <button class="filter-btn" data-filter="Chronicle">Chronicle</button>
+            <button class="filter-btn" data-filter="Magic">Magic</button>
+            <button class="filter-btn" data-filter="Optional">Optional</button>
+            <button class="filter-btn" data-filter="Special">Special</button>
+        </div>
+    </div>
+
+    <div class="card-grid" id="cardGrid"></div>
+
+    <script>
+    const cards = [
+        // === MAGIC DECK ===
+        { name: "Soothing Dreams", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The feral puts a willing target to restful sleep.", effects: "If the target can sleep without interruption, they recover 5 Health points upon awakening, in addition to the normal beneficial effects of resting. Casting Time: Ritual." },
+        { name: "Gift of Nature", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The feral surrenders to the powers of nature and enjoys its boons in return.", effects: "Sun-drenched fruits grow on tree branches, a spring of clear water appears on the landscape, etc. This offering allows up to six humans to feed themselves for the day and to recover 1 Health point each. However, the food must be eaten on the spot and cannot be taken away, or it will rot immediately. Casting Time: Ritual." },
+        { name: "Universal Language", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The feral can understand and communicate with animals.", effects: "This spell doesn't allow them to obtain detailed or complex information, but the feral can get a reliable description of their surroundings within minutes. By spending 1 additional MP, they can suggest a simple action to a creature of their choice. The creature obeys as long as the suggestion doesn't endanger its life or that of its group. Casting Time: Channel." },
+        { name: "Stalk Prey", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "Heightening their senses, the feral can detect living creatures within 50 yards.", effects: "Any detected creature appears in the mage's mind. This power can attach itself to a specific target to track it using its scent, pace, or heartbeat. However, it can't detect living beings protected from magic or that can deceive the senses of their pursuers. Casting Time: Channel." },
+        { name: "Call of the Pack", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The mage can increase certain traits of a living being: voice, build, posture, expression, etc.", effects: "For 10 minutes (or the duration of a fight), the target receives a +1 bonus to all its Communication, Leadership, and Performance rolls to impress, command, garner respect, intimidate, etc. Casting Time: Ritual." },
+        { name: "Bark", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The mage honors the creativity of life and adorns the target's skin with an impenetrable and gnarly shell.", effects: "For 10 minutes (or the duration of a fight), the target receives a Protection of 1 (cumulative with any Protection conferred by armor). Casting Time: Channel." },
+        { name: "Earthly Binds", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "Brambles sprout from the ground and wrap around the target's legs.", effects: "The target cannot move for the next 2 Rounds and suffers a -2 penalty on all its Speed rolls if it is engaged in combat. Each Round, it can try to free itself by making a contested Feats roll (Evasion or Strength) against the mage's Magic. On a failure, it immediately suffers 1 damage point due to the thorns. Casting Time: Channel." },
+        { name: "Rush", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage imbues a living creature with new energy and speed.", effects: "Gives the target a +2 bonus to Potential for the next 3 Rounds. Casting Time: Channel." },
+        { name: "Submission", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage modulates their voice with magic and sends a thunderous message to their enemies.", effects: "The spell's target, who must be able to hear the mage, makes a Mental Resistance roll. On a failure, it can either flee or stand its ground with a \u22123 penalty to all its rolls for the next 2 Rounds. Casting Time: Channel." },
+        { name: "Morrigan's Howl", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage inflates their lungs with magical energy and expels it in a dizzying howl.", effects: "The target is stunned for 4 rounds. At the end of each of its turns, it can make a Stamina roll to regain its senses and end the effects of the spell. Casting Time: Channel." },
+        { name: "Swarm", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage spreads their hands and reveals countless hordes of insects that swarm over their prey.", effects: "The target immediately suffers 8 damage points and suffers a \u22121 penalty on all rolls until the end of the next Round. Casting Time: Channel." },
+        { name: "Beastly Traits", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage grants a living creature one of several animal traits for 10 minutes (or the duration of a fight).", effects: "Choose one: Supernatural Agility (+3 to Feats and Speed), Claws (+3 to Close Combat, damage 3), Eagle Eye (+3 to Perception, Throwing and Shooting), Wolf Step (+3 to Stealth and Potential), or Quick (+4 to Defense). The mage can empower this spell to grant additional traits, increasing the difficulty by +3 per trait. Casting Time: Ritual." },
+        { name: "Omen", deck: "Magic", cost: "4 MPs", maxCount: null, flavor: "The mage practices haruspicy to try to interpret the signs and catch a glimpse of upcoming events.", effects: "For the next 24 hours, they gain an overall bonus of +5 that they can use on all or part of their dice rolls (+5 on 1 roll, or +1 on 5 rolls, etc.). The mage can give all or part of that bonus to their companions as long as they can communicate with them. If unused within 24 hours, it disappears. The spell can be used only once a day. Casting Time: Ritual." },
+        { name: "Reminiscence", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "Looking into the eyes of a corpse, the druid can see what they saw in the minute before their death.", effects: "The vision will be more or less clear depending on the state of decay of the corpse, and also on its species. If a corpse has no eyes, or the eyes are in too bad a condition, the spell cannot be cast. Casting Time: Ritual." },
+        { name: "Fragility", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The druid reveals their target's weaknesses: a chink in armor, an old wound, a weak spot, etc.", effects: "As soon as the attacker knows this information (the druid must be able to communicate it to them), the target suffers a \u22122 penalty to its Defense until the end of the fight. Casting Time: Ritual." },
+        { name: "Raise the Dead", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The druid breathes a spark of life into a dead body on which they place their hands.", effects: "Transforms it into a Puppet (see Corebook, Companions) that obeys their orders. Maintaining the creature costs 1 additional MP every hour. A druid can control up to 3 Puppets at a time. Casting Time: Ritual." },
+        { name: "Ruin", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The druid channels their power and casts a cloud of corrupting magic on their target.", effects: "The victim immediately suffers 3 damage points. Any non-magical Protection counts as 0 for such an attack. Casting Time: Channel." },
+        { name: "Degeneration", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The target suddenly becomes dizzy, struggles to move, or finds that its armor starts oxidizing.", effects: "If the spell is cast before the fight begins, the target suffers a \u22122 penalty to its Speed; if the fight is already underway, it drops two ranks in the initiative order for the duration of the fight. Casting Time: Instant." },
+        { name: "Call of the Grave", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The mage uses a dead body and transforms it into a Revenant at their command.", effects: "Transforms a dead body into a Revenant (see Corebook, Companions). Maintaining the creature costs 1 additional MP every hour. A druid can control only one Revenant at a time. Casting Time: Channel." },
+        { name: "Morbid Attraction", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage places a curse on a living creature and marks it with the seal of death.", effects: "For 2 Rounds, any living being attacking the target rolls 2D10 on their Resolution roll and keeps the result of their choice. Rolls to confirm critical successes or failures are also made by using 2D10. Casting Time: Channel." },
+        { name: "Vile Summon", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage summons a Horror intent on destroying its master's enemies.", effects: "Summons a Horror (see Corebook, Companions). Maintaining the creature costs 1 additional MP every hour or it will return to its plane of existence. A druid can control only one Horror at a time. Casting Time: Ritual." },
+        { name: "Sacrifice", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage sacrifices one of their summons to absorb part of its life essence.", effects: "The creature (Puppet, Revenant, or Horror) immediately turns to dust and the mage recovers its remaining Health points, up to a maximum of 4 Health points. Casting Time: Instant." },
+        { name: "Disunion", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage spreads confusion and dissension among their opponents.", effects: "While under the effect of the spell, the target must attack the nearest creature or human as if it were an enemy. At the end of each of its turns, the target can make a Mental Resistance roll to regain its senses and end the effects of the spell. Casting Time: Channel." },
+        { name: "Explosion", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage sacrifices one of their summons to trigger an explosion of blood and flesh.", effects: "It immediately inflicts 2/3/5 damage points (depending on the familiar used: Puppet/Revenant/Horror) to any living thing (ally or enemy) within 3 yards. The creature's body can no longer be used in any way. Casting Time: Instant." },
+        { name: "Visions", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage sends visions of terror into the mind of a living being and can even create the illusion of its impending death.", effects: "The target suffers an overall \u22124 penalty to all of its Resolution and Defense rolls. At the end of each of its Rounds, the target can make another Mental Resistance roll to regain its senses and end the effects of the spell. Casting Time: Ritual." },
+        { name: "Wither", deck: "Magic", cost: "4 MPs", maxCount: null, flavor: "By perverting the life essence of a living being, the mage can inflict terrible wounds.", effects: "The target immediately suffers 4 damage points. Any non-magical Protection counts as 0 for such an attack. At the beginning of each of its Rounds, the target automatically suffers 2 additional damage points (which can be halved with a successful Stamina roll). This effect lasts until the target is magically healed or drops to Critical Condition. Casting Time: Channel." },
+        { name: "Call of the Wyrdness", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The arcanist can summon the Wyrdness in a 30-foot radius around them.", effects: "Can cast this spell in an area of Wyrdness level 0. The Wyrdness level increases by 1 for 1 hour (or the duration of the fight), with all the associated consequences. Afterwards, the summoned Wyrdness dissipates and the level returns to its initial level. Casting Time: Ritual." },
+        { name: "Shroud", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The arcanist transforms the Wyrdness into a shroud of mist that muffles all sounds and conceals movement.", effects: "The target gains a +2 bonus to Stealth rolls for 1 hour (or the duration of the fight). Casting Time: Channel." },
+        { name: "Shaping", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The arcanist extracts and shapes the fabric of the Wyrdness to fashion a small item.", effects: "Creates a perfect, strong, and usable replica of a short weapon, a key, or any other item that can be held in one hand. The item has no extraordinary properties and must be within the arcanist's knowledge. If it is a weapon, it inflicts equal damage as its normal equivalent. After 1 hour, the item returns to the Wyrdness and vanishes. Casting Time: Ritual." },
+        { name: "Purification", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "Arcanists gain elemental knowledge of the Wyrdness and can direct its movements.", effects: "The arcanist creates a zone with a 5-yard radius, centered on a point of their choosing, from which the Wyrdness retreats. This zone lasts for 4 hours. Casting Time: Channel." },
+        { name: "Wyrdblade", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The mage directs the magical mists swirling at their feet and launches them at their target.", effects: "The Wyrdness tendrils slash at the victim on the next Round, inflicting 5 damage points and forcing them to make a Mental Resistance roll. On a failure, the target is restrained and cannot move for the next 3 Rounds. Casting Time: Ritual." },
+        { name: "Deliverance", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The mage unties a Wyrdness thread and uses it to sew the wounds of an ally in contact.", effects: "That ally immediately recovers 2 Health points and ignores the penalties of a bad Health condition for the next 2 Rounds. Casting Time: Channel." },
+        { name: "Time Freeze", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "Renouncing reality, the mage alters the flow of time and can halt its course for a few moments.", effects: "As soon as the spell is cast, the mage can play 2 Rounds (or 1 minute out of combat) without anyone else being able to act. Casting Time: Ritual." },
+        { name: "Monody", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage closes their eyes and sings a strange serenade.", effects: "The target immediately regains 2 Health points, and 2 Health points every round for the next 3 Rounds (or 3 minutes). Casting Time: Channel." },
+        { name: "Projection", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "For 10 minutes, the mage casts their consciousness into the Wyrdness.", effects: "They move at a speed of 6 miles/h, aren't affected by Wyrdness effects, don't need to breathe, don't get tired, and can cross through any non-hermetic obstacle. Their presence is imperceptible, except to mages who can attempt to spot them with an opposed Magic roll. During this time, the mage's body becomes lethargic. Casting Time: Ritual." },
+        { name: "Parody", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage can shape their flesh and copy the features of another living being.", effects: "It can be an animal, a human being, or a supernatural species, as long as the mage has a clear view or a good mental representation of their target. The parody mimics the creature's features, but not its personality, gestures, or memories. The effect lasts 1D10 hours, or the caster can end them at any time. Casting Time: Ritual." },
+        { name: "Teleport", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The Wyrdness is everywhere and nowhere at the same time: the mage can use this principle to teleport.", effects: "Teleport a short distance, or to any previously visited and physically accessible place within a 9-mile radius. However, they can't perceive their surroundings clearly and are exposed to risks on arrival. The journey is instantaneous, but leaves the user stunned for 1D10 minutes (\u22122 to all Resolution rolls). Casting Time: Ritual." },
+        { name: "Cataclysm", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage conjures the primordial forces of Avalon and directs all their anger at their opponent.", effects: "Roll 1d10: 1\u20133: Ground cracks, target falls 8 yards, suffers 6 damage (Feats DC 14 to halve, Acrobatics DC 17 to negate). 4\u20136: Wyrdness swoops down, 8 damage (ignores non-magical Protection). 7\u20139: Summons a Wyrdness level 2 creature to attack target. 10: Wave of raw magic \u2014 target makes DC 17 Stamina roll: success = 6 damage + loses next Round; failure = instant obliteration. Casting Time: Ritual." },
+        { name: "Inversion", deck: "Magic", cost: "4 MPs", maxCount: null, flavor: "The mage surrenders themself entirely to the Wyrdness and draws a tiny fraction of its power to conjure reality.", effects: "Choose one: Cancel the last combat turn (and all consequences). Restore a destroyed object to its original form. Remove any penalty or Torment (except Health-related). Rearrange the order of action in a fight as desired. This spell can only be used once a day. Casting Time: Ritual." },
+        { name: "Soothe the Mind", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The wizard strengthens the target's mind.", effects: "For 10 minutes (or the duration of a fight), the target receives a +2 bonus to Mental Resistance. Casting Time: Channel." },
+        { name: "Orrin's Gift", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "Infusing their hands with pure magic, the wizard touches an ailing being to cure evil and heal wounds.", effects: "They must choose between curing a disease, stopping an infection or poison, or restoring 4 Health points to the target. Casting Time: Ritual." },
+        { name: "Illumination", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The wizard creates a bright beam of light that lights up an area in front of them.", effects: "The beam can emanate from any part of the wizard's body or from an object within range, and lasts for 10 minutes (or the duration of a fight). At any time, the wizard can end the spell to dazzle an opponent, inflicting an overall \u22124 penalty on its combat rolls until the next Round. Casting Time: Ritual." },
+        { name: "Circle of Protection", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "Focusing, the wizard creates a safe zone entirely protected from the Wyrdness.", effects: "The zone is 6 yards wide on each side. The circle of protection follows the wizard and lasts for 3 hours. Casting Time: Channel." },
+        { name: "Shield", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "With a wave of their hand, the mage creates a protective mandorla around their target.", effects: "Their Protection increases by 2 for the next 3 Rounds. Casting Time: Channel." },
+        { name: "Mystical Healing", deck: "Magic", cost: "1 MP", maxCount: null, flavor: "The mage sends a fraction of magic into the target's wounds.", effects: "The target immediately recovers 6 Health points and gains a +1 bonus to Defense for the next 24 hours. Casting Time: Ritual." },
+        { name: "Sharp Mind", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "Sorcery practitioners can enter a meditative trance and share these moments of enlightenment with their companions.", effects: "The mage and chosen targets gain a +3 bonus to Communication, Erudition, or Religion rolls for the next hour. Casting Time: Channel." },
+        { name: "Holy Weapon", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage can infuse a weapon with a spark of magic.", effects: "Any item thus charged deals +2 damage for the duration of the fight. Casting Time: Ritual." },
+        { name: "Push", deck: "Magic", cost: "2 MPs", maxCount: null, flavor: "The mage focuses their spirit and pushes their target in the direction of their choice.", effects: "Pushes target 1D10 yards in the direction of their choice, inflicting 5 damage points. The environment (such as a fall or a collision with a dangerous surface) can increase the damage dealt at the leader's discretion. Casting Time: Instant." },
+        { name: "Mind Duel", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage forces a living being into a battle of the mind.", effects: "If the target fails a Difficult (17) Mental Resistance check, it loses control of its body and mind for several seconds. It cannot act until the end of the next Round (it cannot make dice rolls, including Physical or Mental Resistance) and its Defense is reduced to 0 during this time. Casting Time: Channel." },
+        { name: "Sacred Blow", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "The mage channels their power and conjures a projectile of raw magic that can pierce armor and stone.", effects: "The target suffers 5 damage points (which can only be reduced by magical protection) and suffers \u22121 to Protection until the end of the fight. Casting Time: Channel." },
+        { name: "Veil of Protection", deck: "Magic", cost: "3 MPs", maxCount: null, flavor: "With a simple wave of the hand, the mage weaves a protective web around their target, strengthening its magic defenses.", effects: "For 3 hours or until the end of the fight, the target receives a +4 bonus to Stamina and Mental Resistance rolls. Casting Time: Channel." },
+        { name: "Eternal Bulwark", deck: "Magic", cost: "4 MPs", maxCount: null, flavor: "The wizard erects a barrier of raw magic at the feet of their allies, capable of deflecting blows and stopping projectiles.", effects: "The caster chooses a zone that is 4 yards wide on either side (2 squares) and which can accommodate up to 6 people: as long as they remain within this sacred perimeter, the allied creatures cannot suffer damage (physical or magical) or Routs. The zone disappears after 2 Rounds. Casting Time: Channel." },
+        // === BARGAINING DECK ===
+        { name: "Ancient Evil", deck: "Bargaining", cost: "+10 XP", maxCount: "Unique", flavor: "Something lies dormant here... Perhaps you awakened it by accident, or perhaps it was waiting for you all along. The evil is now on your heels and won't relent for as long as you live.", effects: "Use this card at any time of the campaign to summon a Wyrdness level 3 opponent, regardless of the Territory's Wyrdness level. If this card is activated in an area with a Wyrdness level of 3 or higher, you summon a level 4 opponent instead." },
+        { name: "Arcane Instability", deck: "Bargaining", cost: "+5 XP", maxCount: "2 cards", flavor: "The currents of magic suddenly reverse and make channeling more difficult. Hair stands on end as the air becomes charged with power; moments later, lightning appears and strikes the surrounding area.", effects: "Use this card during the campaign when one or more Characters wish to cast a spell and before they roll the die. If the spellcasting result is 4 or below, it counts as a critical failure. The caster immediately resolves the effects." },
+        { name: "Bad Omens", deck: "Bargaining", cost: "+10 XP", maxCount: "Unique", flavor: "A red moon, omen of Crom Cruach, the god of worms and graves, looms behind the clouds at night. Its coming is considered a bad omen by the inhabitants of Avalon.", effects: "Use this card on any morning of the campaign. For the next 24 hours, the Characters suffer a \u22121 penalty to all their rolls." },
+        { name: "Fore-dweller Presence", deck: "Bargaining", cost: "+20 XP", maxCount: "2 cards", flavor: "The enemy has pushed far inland and established an outpost. Is this an isolated camp or the beachhead of a Fore-dweller invasion force? The site is heavily defended and threatens all surrounding human communities.", effects: "Use this card at the beginning or during the campaign. Refer to the Avalon map. Select a Territory and secretly place a Fore-dweller Outpost there. The location is overwhelmed by the Wyrdness (Wyrdness level 3) and is home to 1D10 Fore-dwellers who attack humans on sight." },
+        { name: "Reality Warp", deck: "Bargaining", cost: "+5 XP", maxCount: "3 cards", flavor: "The Wyrdness is a force of change. Humans are helpless against its effects, which they know to be pernicious and deceptive. A cloud of tainted pollen can bring deadly affliction, while treacherous hail can invigorate soils that have been barren for decades. The Wyrdness is fickle by nature.", effects: "Use this card during the campaign once the group has determined the effects of the surrounding Wyrdness. You may increase or decrease the result by 1. The new effects apply immediately." },
+        { name: "Red Death", deck: "Bargaining", cost: "+15 XP", maxCount: "Unique", flavor: "Carried by settlers from the Continent or transmitted by the afflicted of the Island Asylum, the Red Death strikes and spreads in Avalon. The epidemic reaches the most remote hamlets and plague victims haunt the landscape in search of a cure, a quick death, or new victims...", effects: "Use this card at the beginning or during the campaign to spread the Red Death epidemic in Avalon. This can be confined to specific Territories or affect the island as a whole. New opponents appear: the 'Plagued.' The statistics of the Plagued are described in the Universe booklet." },
+        { name: "Sunken Refuge", deck: "Bargaining", cost: "+20 XP", maxCount: "Unique", flavor: "Despite the sacrifices and bravery of its defenders, the refuge has fallen. The place is now a ruin, overrun by the wind and the stench of death, or worse. This is not the time for reflection: you must leave without further delay.", effects: "Use this card at the end of Bargaining. Remove one of the 'Refuge' cards obtained during the Chronicle of Avalon. The place has fallen to the enemy or has been wiped out by the Wyrdness. All human presence has been eradicated and the area is now hostile to the Characters. The Wyrdness level of the Territory immediately increases to 2." },
+        { name: "Beyond the Seas", deck: "Bargaining", cost: "\u221210 XP", maxCount: "Unique", flavor: "The constant influx of settlers from the Continent and beyond has greatly promoted trade in Avalon. The various settlements on the island benefit from this increased activity, and have rare and exotic goods to offer.", effects: "Use this card during Character Creation. Each player gains 10 extra Riches to buy equipment when they finalize their Character." },
+        { name: "Breakthroughs", deck: "Bargaining", cost: "\u22125 XP", maxCount: "3 cards", flavor: "Daring expeditions to Avalon have opened up paths connecting the communities and the different Territories of the island. Although generally protected from the Wyrd, these marked paths are still prey to highwaymen and other dangers that abound in the region. Stay vigilant.", effects: "Use this card at any time to decrease the Wyrdness level of the Territory by 1. This impacts Wyrdness effects and creature generation. The Wyrdness level can never drop below 1 this way." },
+        { name: "By a Hair's Breadth", deck: "Bargaining", cost: "\u22125 XP", maxCount: "3 cards", flavor: "You evade the Wyrd's attacks and narrowly escape the wave of energy released by the fog. Despite your nimbleness, you can't completely escape its caress. Still, you welcome it nonetheless, knowing that you may have avoided a worse fate.", effects: "Use this card when the party determines the effects of the surrounding Wyrdness. Roll 2D10 and keep the result of your choice. If both results are the same, reroll the dice." },
+        { name: "Desperate Attack", deck: "Bargaining", cost: "\u22125 XP", maxCount: "2 cards", flavor: "Drawing on your remaining strength, you deal a devastating blow to your opponent, breaking through their defense and cutting deep into their flesh. Throwing caution to the wind, the assault is shockingly brutal.", effects: "Use this card during the campaign before your Character makes an attack during the Round. The attack is resolved with a +9 modifier. On the next Round, the Character acts last and suffers a \u22122 penalty to their Defense." },
+        { name: "Allmother's Mercy", deck: "Bargaining", cost: "\u221210 XP", maxCount: "2 cards", flavor: "Your actions haven't gone unnoticed and you have earned the favor of the Allmother, protector of humanity. In times of adversity, your heart fills with renewed ardor and you can feel Her hand guiding your actions. Despite the pain and madness of the world, you will not fall.", effects: "Use this card when a Character checks the 'Agony' space on their Health table. They immediately regain 5 points of Health." },
+        { name: "Sanctuary", deck: "Bargaining", cost: "\u221215 XP", maxCount: "2 cards", flavor: "Against all odds, refugees from all over the island have managed to settle in a hostile area. The colony is self-sufficient and has crude defenses against the Wyrdness and surrounding threats. It is a welcome stop for any traveler wishing to push further into Avalon.", effects: "Use this card in the beginning of the campaign and refer to the Avalon map. Choose a Territory, the exact location of the sanctuary, and its name. The location is now a Refuge protected from the Wyrdness (Wyrdness level 0) that hosts 3D10+30 inhabitants. The community offers hospitality to travelers and can house merchants and healers." },
+        { name: "Spark of Power", deck: "Bargaining", cost: "\u22125 XP", maxCount: "2 cards", flavor: "With aggressive arcane powers, you weaken the magical defenses of the living beings around you, siphoning off part of their life essence. A few moments later, you feel a rush of magic pulse through your veins.", effects: "Use this card at any time during the game. Your Character immediately regains 3 points of Magic. Any living creature (ally or foe) within a 9-foot radius suffers a \u22122 penalty on rolls to resist spell effects for the next three hours." },
+        // === CHRONICLE DECK ===
+        { name: "Heroes of the People", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers helped the townsfolk and defended the town. Pushed back, the attackers retreated behind the imposing walls of the citadel. This victory marks the birth of a new era in Avalon.", effects: "Keywords: Autonomy, Popular sovereignty, Weakened temporal power. Each Character chooses one bequest: +2 in Communication with common folk, OR +1 in any one Domain between Close Combat, Feats, or Natural Environment. Includes Repercussions at levels 0\u20133+." },
+        { name: "Servants of the Crown", deck: "Chronicle", cost: null, maxCount: null, flavor: "Alongside Gaheris, the adventurers break the rebellion and restore order to the town. The town is pacified and the Crown is grateful for the adventurers' intervention. The last insurgents are hanged from the gallows or thrown into the Wyrdness.", effects: "Keywords: Order, Repression, Strengthened temporal power. Each Character chooses one bequest: +1 in any one Domain between Healing, Inspiration, or Mounted Combat, OR +2 in Erudition. Includes Repercussions at levels 0\u20133+." },
+        { name: "Defenders of Timberwall", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers supported Ultan, the merchant lord of Timberwall, and repelled the invaders. Mordred's army is defeated and retreats to Crow's Nest. Ultan showers his new lieutenants with boons and opens the gates of the city to them.", effects: "Keywords: Merchant, Intrigues, Unification. Each Character chooses one bequest: 10 Riches, OR +1 in any two Domains between Craft, Performance, or Travel, OR starts with the Scholarly advantage. Includes Repercussions at levels 0\u20133+." },
+        { name: "Kincaid's Heralds", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers supported Lady Kincaid and triumphed over her enemies. Mordred's troops are routed, and the city of Timberwall falls soon after. They now enter her service.", effects: "Keywords: Sovereign, Politics, Confederation. Each Character chooses one bequest: 10 additional Experience Points, OR +1 in any two Domains between Command, Erudition, or Magic, OR starts with Regular Armor and Short Sword. Includes Repercussions at levels 0\u20133+." },
+        { name: "Mordred's Enforcers", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers supported Mordred and defeated his enemies. He entrusts his new servants with the head of the goddess Morrigan, a powerful relic capable of shaking the foundations of the earth.", effects: "Keywords: Warlord, Conflict, Domination. Each Character chooses one bequest: +1 in the Stealth and Religion Domains, OR the Character's pool of Magic Points permanently increases by 1. Includes Repercussions at levels 0\u20133+." },
+        { name: "Off the Beaten Path", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers have reached the shores of Mirror Lake and sought the guidance of the Lady of the Lake, who accompanied Arthur 600 years ago in his conquest of Avalon.", effects: "Keywords: Fore-dweller, Myths and legends, Avalon. Players gain the special card 'Old Friend.' Each Character chooses one bequest: +2 in Wyrdness Mysteries, OR +1 in Perception and Monsters, OR 10 additional Experience Points. Includes Repercussions at levels 0\u20133+." },
+        { name: "Restored Power", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers' path leads them once again to Camelot, where they agree to swear fealty to Morgaine. She advises them to question Amergin, the Arch Druid of the Moonring.", effects: "Keywords: Magic, Camelot, Established power. Each Character chooses one bequest: +2 in Magic, OR +2 in Communication with Crown representatives, OR +1 in Religion and Performance. Includes Repercussions at levels 0\u20133+." },
+        { name: "Reformed Order", deck: "Chronicle", cost: null, maxCount: null, flavor: "Thanks to these adventurers of old, the Order of the Round Table is reformed and its knights swear an oath once again. Hope is reborn and their exploits quickly become part of the legend.", effects: "Keywords: Tradition, Chivalric ideal, Arthur's legacy. Players gain the special card 'Heroic Charge.' Each Character chooses one bequest: +2 in Mental Resistance, OR +1 in any three Domains. Includes Repercussions at levels 0\u20133+." },
+        { name: "Collapsed Order", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers of yesteryear have prompted the fall of a perverted and misguided order. The memory of the Round Table is fading fast. Arthur's last knights are dispersed or killed.", effects: "Keywords: Weight of the past, Renewal, Pragmatism. Each Character chooses an Advantage costing 10 points. Additionally, each Character chooses one bequest: +2 in Stamina, OR +2 in Defense. Includes Repercussions at levels 0\u20133+." },
+        { name: "Repentance", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers have sided with the First King and released Excalibur from its prison. Arthur, the Once and Future King, thanks them and, relieved, falls along with the perverted Camelot. The Fall of Avalon is imminent.", effects: "Keywords: Arthur's wish, Fore-dwellers, Balance. Players gain the special card 'Reprieve.' Each Character gains: 80 additional Experience Points and +1 Survival point. Includes Repercussions at levels 0\u20133+." },
+        { name: "Status Quo", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers have sided with Morgaine and defeated the aberration who claimed to be king. Excalibur is driven deep into the fabric of the Wyrd. The Fore-dwellers launch their forces to conquer the island.", effects: "Keywords: Morgaine's wish, Humanity, Coming war. Players gain the special card 'Retaliation.' Each Character obtains: 80 additional Experience Points and +1 in Potential. Includes Repercussions at levels 0\u20133+." },
+        { name: "Unbreakable Oath", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers have stayed true to their vows and have sided with their lord. Only the survival of their subjects matters now. Cuanacht and Camelot are pillaged and their inhabitants enslaved.", effects: "Keywords: Loyalty, Oath, Servitude. Players gain the Refuge card of the city of their ally during The War of Three Lords (Timberwall, Farshire, or Crow's Nest). Includes Repercussions at levels 0\u20133+." },
+        { name: "Eternal Loyalty", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers traveled Avalon from east to west, unearthed forgotten secrets and fought against higher powers. Yet they couldn't bring themselves to abandon their own and thus set out for Cuanacht.", effects: "Keywords: Honor, Family, United in the Fall. Players gain the 'Cuanacht' Refuge card. Includes Repercussions at levels 0\u20133+." },
+        { name: "Loyal to the Throne", deck: "Chronicle", cost: null, maxCount: null, flavor: "The wave of Wyrdness may crash against Camelot's high walls, but its foundations remain unshakeable. The city has always been a symbol of hope and the people need a strong ruler now more than ever.", effects: "Keywords: Crown, Vassalage, Absolute Power. Players gain the 'New Camelot' Refuge card. Includes Repercussions at levels 0\u20133+." },
+        { name: "Forgotten Shores", deck: "Chronicle", cost: null, maxCount: null, flavor: "The adventurers have done everything to save humanity, but extinction is inevitable. Why defend a people who have neither the legitimacy nor the dignity to rule over a land once preserved from their influence? The Continent awaits them.", effects: "Keywords: Abandonment, Forsaken humanity, Hope. Players gain the 'Alone' special card. Includes Repercussions at levels 0\u20133+." },
+        // === SPECIAL DECK ===
+        { name: "Old Friend", deck: "Special", cost: null, maxCount: null, flavor: "Convinced that the adventurers' intentions are sincere, the Pale Lady, who guided Arthur to Avalon 700 years ago, renews her friendship and promise of protection to humanity.", effects: "The 'Mirror Lake' Territory on the Avalon map immediately gains the 'Sanctuary' status. Its Wyrdness level can never exceed 1 and the entire territory becomes a haven for travelers and the Characters." },
+        { name: "Heroic Charge", deck: "Special", cost: null, maxCount: null, flavor: "\"We won't back down as long as we have a breath of life left,\" the Knights of the Round Table proclaim in unison. Avalon's finest gather at the gates of Tuathan and make a last stand.", effects: "During the Saving What Can Be Saved choice, players gain any one additional Refuge card." },
+        { name: "Reprieve", deck: "Special", cost: null, maxCount: null, flavor: "The adventurers' actions in Tuathan have changed the course of history and offered a brief reprieve to the people of Avalon who use these last moments to re-mobilize, stock their granaries, and build defenses against the Wyrd.", effects: "During the Saving What Can Be Saved choice, players gain an additional Refuge card of their choice." },
+        { name: "Retaliation", deck: "Special", cost: null, maxCount: null, flavor: "The adventurers' actions in Tuathan have angered the Fore-dwellers, who are quick to retaliate and launch their forces against Avalon. Isolated communities on the outskirts of Tuathan fall within days.", effects: "During the Bargaining phase, the leader automatically gains the 'Fore-dweller Presence' card. Players gain no XP when they get this card." },
+        { name: "Alone", deck: "Special", cost: null, maxCount: null, flavor: "Humanity stands alone. The so-called Guardians of Avalon have deserted these lands and are now sailing to the Continent, hoping to find a habitable land untouched by the Wyrdness and the Red Death.", effects: "During Bargaining, the group gets the 'Beyond the Seas' card for free. During the Escaping the Wyrdness choice, the players do not vote and must randomly determine a Refuge in Avalon via 1D10 roll." },
+        { name: "Timberwall", deck: "Special", cost: null, maxCount: null, flavor: "Ultan's newly acquired influence and wealth allowed his people to strengthen the ancient city's defenses and prepare for the end of the world with dignity. Protected by the Crude Menhir, the merchant city became the starting point for the first expeditions.", effects: "Timberwall is protected from the Wyrdness and gains the 'City' status." },
+        { name: "Farshire", deck: "Special", cost: null, maxCount: null, flavor: "At the first sign of the Wyrd, the Widow Queen gathered her subjects and offered hospitality and protection to all who pledged fealty to her. Thanks to the Crude Menhir and the resolve of its inhabitants, the city became the heart of human activity in Avalon.", effects: "Farshire is protected from the Wyrdness and gains the 'City' status." },
+        { name: "Crow's Nest", deck: "Special", cost: null, maxCount: null, flavor: "The upper levels of the city were quickly abandoned to the Wyrd, but Mordred's subjects managed to gain access to the countless tunnels beneath the surface. Sheltered from the sun's rays, they formed a new society.", effects: "Crow's Nest is protected from the Wyrdness and gains the 'City' status." },
+        { name: "Cuanacht", deck: "Special", cost: null, maxCount: null, flavor: "Despite the sacrifices and the courage of its defenders, Cuanacht was eventually swallowed by the Wyrdness. Its people survived and managed to settle a new land, spared from the cataclysm.", effects: "Cuanacht is protected from the Wyrdness and gains the 'City' status." },
+        { name: "New Camelot", deck: "Special", cost: null, maxCount: null, flavor: "Once her vassals and loyal subjects were safe, Morgaine sounded the bells of the impregnable Camelot one last time before sealing the gates of Arthur's fortress. Humanity will survive the Wyrd, no matter the cost.", effects: "New Camelot is protected from the Wyrdness and gains the 'City' status." },
+        { name: "Serene Visage", deck: "Special", cost: null, maxCount: null, flavor: "A face carved in the rock appears on the relief of Avalon. This ancient place of pilgrimage delves deep beneath the surface. This construction seems to predate the arrival of men on these lands.", effects: "Serene Visage is protected from the Wyrdness and gains the 'City' status." },
+        { name: "Farpoint", deck: "Special", cost: null, maxCount: null, flavor: "Sitting on a rocky outcrop overlooking the sea, this citadel marks the northern tip of the island. A magical barrier has been erected around the fortress, which serves as an observation post looking over Tuathan.", effects: "Farpoint is protected from the Wyrdness and gains the 'City' status." },
+        { name: "First Farmhold", deck: "Special", cost: null, maxCount: null, flavor: "The history of the First Farmhold has been lost to mankind, but it's said that Arthur established the first city of Avalon here. Until recently, the place was guarded by a gigantic wyrm.", effects: "The First Farmhold is protected from the Wyrdness and gains the 'City' status." },
+        // === OPTIONAL DECK ===
+        { name: "The Voice of the Forgotten", deck: "Optional", cost: null, maxCount: null, flavor: "The gest of troubadours, constrained by the codes and expectations of its audience, focuses on paragons and often omits the true heroes of the Avalonian epic.", effects: "Once per session, the Character can reroll a D10 on a social check (Communication, Leadership, Empathy, or Inspiration). They must keep the result of the new die." },
+        { name: "The Time of Strife", deck: "Optional", cost: null, maxCount: null, flavor: "In the past, petty squabbles and old grudges plagued humanity's endeavors in Avalon. Let us hope that these days are over...", effects: "Once per session, the leader can inflict a \u22122 penalty on a Character during an opposed roll, as long as they are confronted by at least one NPC or enemy." },
+        { name: "Mind Wall", deck: "Optional", cost: null, maxCount: null, flavor: "The trials of the past have left their mark on souls and minds. The resilience of Avalonians is legendary and has always been celebrated in the gests of the troubadours.", effects: "Once per session, a Character may reroll a D10 on a Mental Resistance check. They must keep the result of the new die." },
+        { name: "Coordinated Attack", deck: "Optional", cost: null, maxCount: null, flavor: "Moved by the same impetus, the heroes of Avalon strike in unison. Their movements seem to be guided by an invisible hand come from the depths of time.", effects: "Once per session, two or more Characters may declare a 'Coordinated Attack.' Their action (whether offensive or defensive) for the current Round receives a +2 bonus." },
+        { name: "Sacred Union", deck: "Optional", cost: null, maxCount: null, flavor: "None can hope to survive alone in Avalon. The defeat at the hands of the Fore-dwellers and the final hours of civilization have taught humanity this eternal truth: true strength comes from unity.", effects: "Once per session, when two or more Characters take a joint action using the Teamwork rules, they may keep the results of 2D10." }
+    ];
+
+    // Render cards
+    const cardGrid = document.getElementById('cardGrid');
+    const searchBar = document.getElementById('searchBar');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    let currentFilter = 'all';
+
+    function getTagClass(deck) {
+        return 'tag-' + deck.toLowerCase();
+    }
+
+    function renderCards(filteredCards) {
+        if (filteredCards.length === 0) {
+            cardGrid.innerHTML = '<div class="no-results">No cards found matching your search.</div>';
+            return;
+        }
+
+        cardGrid.innerHTML = filteredCards.map(card => `
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-name">${card.name}</span>
+                    <span class="card-tag ${getTagClass(card.deck)}">${card.deck}</span>
+                </div>
+                ${card.cost || card.maxCount ? `
+                <div class="card-meta">
+                    ${card.cost ? `<span><strong>Cost:</strong> ${card.cost}</span>` : ''}
+                    ${card.maxCount ? `<span><strong>Max:</strong> ${card.maxCount}</span>` : ''}
+                </div>` : ''}
+                <div class="card-flavor">${card.flavor}</div>
+                <div class="card-effects"><strong>Effects.</strong> ${card.effects}</div>
+            </div>
+        `).join('');
+    }
+
+    function filterAndSearch() {
+        const searchTerm = searchBar.value.toLowerCase();
+        const filtered = cards.filter(card => {
+            const matchesDeck = currentFilter === 'all' || card.deck === currentFilter;
+            const matchesSearch = !searchTerm ||
+                card.name.toLowerCase().includes(searchTerm) ||
+                card.flavor.toLowerCase().includes(searchTerm) ||
+                card.effects.toLowerCase().includes(searchTerm) ||
+                (card.cost && card.cost.toLowerCase().includes(searchTerm));
+            return matchesDeck && matchesSearch;
+        });
+        renderCards(filtered);
+    }
+
+    // Event listeners
+    searchBar.addEventListener('input', filterAndSearch);
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            filterAndSearch();
+        });
+    });
+
+    // Initial render
+    renderCards(cards);
+    </script>
+</body>
+</html>
