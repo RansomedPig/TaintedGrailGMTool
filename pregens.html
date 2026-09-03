@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Generated Characters - Tainted Grail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Page-specific styles. Shared chrome (palette, body, background, nav,
+           tab buttons) is inherited from styles.css to match the main tabs. */
+
+        /* These pages use <a> tags for nav; keep them looking like the button tabs. */
+        .top-nav .tab-btn { text-decoration: none; }
+
+        .page-header {
+            text-align: center;
+            padding: 2.5rem 1rem 1.5rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Character Cards Grid */
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .char-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .char-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .char-card.maeve { border-top: 3px solid #4a7fbf; }
+        .char-card.felbren { border-top: 3px solid #8a8a8a; }
+        .char-card.gareth { border-top: 3px solid #5a9a5a; }
+        .char-card.sul { border-top: 3px solid #8b6b3a; }
+
+        .char-card .char-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 0.3rem;
+        }
+
+        .char-card .char-occupation {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .char-card .char-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .color-blue { background: #4a7fbf; }
+        .color-gray { background: #8a8a8a; }
+        .color-green { background: #5a9a5a; }
+        .color-brown { background: #8b6b3a; }
+
+        .char-card .char-desc {
+            font-size: 1rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        /* Expanded Detail Panel */
+        .detail-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 200;
+            overflow-y: auto;
+            padding: 2rem 1rem;
+        }
+
+        .detail-overlay.active { display: block; }
+
+        .detail-panel {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .detail-close:hover { color: var(--gold); }
+
+        .detail-panel h2 {
+            font-family: 'Cinzel Decorative', cursive;
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-panel .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+
+        .detail-section p, .detail-section ul {
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .detail-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-section ul li {
+            padding: 0.2rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .detail-section ul li::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-size: 0.7rem;
+            top: 0.35rem;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            background: var(--bg-card);
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        .stat-item strong { color: var(--gold); }
+
+        .load-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 1.5rem auto 0;
+            padding: 0.8rem 1.5rem;
+            background: var(--accent);
+            color: var(--text-primary);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .load-btn:hover {
+            background: #a04545;
+            box-shadow: 0 4px 12px rgba(139,58,58,0.5);
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 1.8rem; }
+            .char-grid { grid-template-columns: 1fr; }
+            .tab-btn { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+            .detail-panel { padding: 1.2rem; }
+            .stat-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="tab-buttons">
+            <a href="index.html" class="tab-btn">Reference Guide</a>
+            <a href="index.html#tab-creator" class="tab-btn">Character Creator</a>
+            <a href="index.html#tab-sheet" class="tab-btn">Character Sheet</a>
+            <a href="index.html#tab-leader" class="tab-btn">Game Leader</a>
+            <a href="decks.html" class="tab-btn">Card Decks</a>
+            <a href="bestiary.html" class="tab-btn">Bestiary</a>
+            <a href="pregens.html" class="tab-btn active">Pre-Gen Characters</a>
+            <a href="adventures.html" class="tab-btn">Adventures</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>Pre-Generated Characters</h1>
+        <p>Click a character to view full details and load them to your character sheet</p>
+    </div>
+
+    <div class="char-grid" id="charGrid"></div>
+
+    <div class="detail-overlay" id="detailOverlay">
+        <div class="detail-panel" id="detailPanel"></div>
+    </div>
+
+    <script>
+    const characters = [
+        {
+            id: 'maeve',
+            name: 'Maeve',
+            color: 'Blue',
+            colorClass: 'color-blue',
+            cardClass: 'maeve',
+            age: 21,
+            origin: 'People of the Continent',
+            occupation: 'Knight',
+            description: 'A knight with confident posture and movements, and an athletic figure.',
+            traits: 'Resolute, Unyielding',
+            background: "This land is not yours. It never has been and it never will be. You were born in the Homelands, but you had to flee to escape the ravages of war and the Red Death. Many of your kin\u2014including your mother, Oleiv, thane of the Bergrost clan\u2014sacrificed their lives to save a handful of you from this cursed land. After a harrowing journey, you reached the distant shores of Avalon. For several years now, you've roamed the island's misty roads, putting your sword at the service of the humble. Your bravery and skill with the sword have saved you from many perils and earned you the esteem of many Avalonians.",
+            personality: "Despite adversity and setbacks, you never give up. Throughout the years, this unwavering determination has let you triumph over the countless perils you met. Enshrined as a principle of life by your ancestors, your perseverance acts as your shield and inflames the hearts of your fellow humans. However, your tenacity sometimes borders on stubbornness.",
+            ways: { combativeness: 4, creativity: 1, awareness: 3, conviction: 5, reason: 2 },
+            domains: {
+                closeCombat: 5, erudition: 0, leadership: 0, naturalEnvironment: 0, shootingThrowing: 0,
+                communication: 0, feats: 2, magic: 0, perception: 1, stealth: 1,
+                compassion: 1, healing: 0, monsters: 0, performance: 0, travel: 2,
+                craft: 0, inspiration: 2, mountedCombat: 0, religion: 0, wyrdnessMysteries: 0
+            },
+            disciplines: { swords: 7, tenacity: 6 },
+            advantages: ['Contact', 'Mist-Embraced'],
+            disadvantages: ["Mabd's Ill Omen", 'Arcane Frailty'],
+            defense: 10,
+            speed: 7,
+            stamina: 10,
+            mentalResistance: 10,
+            potential: 1,
+            survivalPoints: 3,
+            magicPoints: 0,
+            riches: 5,
+            equipment: ['Explorer\'s gear', 'Travel rations', 'Basic remedy'],
+            weapon: { name: 'Longsword', damage: 3 },
+            weapon2: { name: 'Sword', damage: 2 }
+        },
+        {
+            id: 'felbren',
+            name: 'Felbren',
+            color: 'Gray',
+            colorClass: 'color-gray',
+            cardClass: 'felbren',
+            age: 31,
+            origin: 'People of the Hinterlands',
+            occupation: 'Cellarer',
+            description: 'A handsome, affable man with a slim figure and a welcoming attitude.',
+            traits: 'Generous, Talkative',
+            background: "Born into great poverty, you were entrusted by your parents to the priests of the Allmother in the hope of a better life. Throughout your youth, you lived secluded in a monastery rebuilt after the Fall of Avalon. Cast out of Camelot, you have wandered for several years, moving from village to village. Within a few months, you have become one of the purest, most vibrant incarnations of the Allmother's faith for the locals.",
+            personality: "Rhunon's subjects praise your benevolence and lavishness: how often have you interceded on their behalf, or privileged their welfare and safety over your own? Besides the inclinations of your soul, your natural warmth has earned you the natives' affection. However, your legendary volubility sometimes gets you into trouble.",
+            ways: { combativeness: 3, creativity: 4, awareness: 2, conviction: 5, reason: 1 },
+            domains: {
+                closeCombat: 0, erudition: 1, leadership: 2, naturalEnvironment: 0, shootingThrowing: 0,
+                communication: 3, feats: 0, magic: 0, perception: 0, stealth: 0,
+                compassion: 3, healing: 1, monsters: 0, performance: 2, travel: 1,
+                craft: 0, inspiration: 2, mountedCombat: 0, religion: 5, wyrdnessMysteries: 0
+            },
+            disciplines: { tenacity: 6 },
+            advantages: ["Allmother's Favor", 'Deep Faith', 'Mist-Embraced'],
+            disadvantages: ['Poor'],
+            defense: 10,
+            speed: 7,
+            stamina: 10,
+            mentalResistance: 10,
+            potential: 2,
+            survivalPoints: 4,
+            magicPoints: 0,
+            riches: 5,
+            equipment: ['Explorer\'s gear', 'Travel rations', 'Wyrdcandle censer'],
+            weapon: { name: 'Mace', damage: 3 }
+        },
+        {
+            id: 'gareth',
+            name: 'Gareth',
+            color: 'Green',
+            colorClass: 'color-green',
+            cardClass: 'gareth',
+            age: 35,
+            origin: 'People of the Hinterlands',
+            occupation: 'Healer',
+            description: 'Massive silhouette, bright, comforting eyes, imbued with a sense of wisdom.',
+            traits: 'Cautious, Uncertain',
+            background: "From an early age, your hands have served and helped life. Born into a small mountain community on a sacred kurgan in the northeast of the island, you followed your mother's teachings and became a gifted healer, relieving both beasts and men afflicted by the harsh climate and life in Avalon. You've been on the run ever since a dark-woven Wyrdness destroyed your village, trying to put enough distance between you and your eternal pursuer.",
+            personality: "The curse of the Lemure demands that you never let your guard down and that you remain extremely vigilant. Over the years, you've learned to anticipate his sudden appearances by being extra cautious. These suspicions have only strengthened your doubts, keeping you from forming sincere relationships with your fellow human beings.",
+            ways: { combativeness: 2, creativity: 4, awareness: 3, conviction: 1, reason: 5 },
+            domains: {
+                closeCombat: 0, erudition: 1, leadership: 0, naturalEnvironment: 3, shootingThrowing: 0,
+                communication: 0, feats: 1, magic: 0, perception: 2, stealth: 0,
+                compassion: 2, healing: 5, monsters: 1, performance: 0, travel: 2,
+                craft: 0, inspiration: 0, mountedCombat: 0, religion: 0, wyrdnessMysteries: 2
+            },
+            disciplines: { firstAid: 7, tenacity: 6 },
+            advantages: ['Miracle Worker'],
+            disadvantages: ['Hunted'],
+            defense: 13,
+            speed: 5,
+            stamina: 10,
+            mentalResistance: 6,
+            potential: 2,
+            survivalPoints: 3,
+            magicPoints: 0,
+            riches: 5,
+            equipment: ['Antidote', 'Haversack', 'Explorer\'s gear', 'Travel rations', 'Healer\'s pouch'],
+            weapon: { name: 'Brush hook', damage: 1 }
+        },
+        {
+            id: 'sul',
+            name: 'Sul',
+            color: 'Brown',
+            colorClass: 'color-brown',
+            cardClass: 'sul',
+            age: 32,
+            origin: 'People of the Hinterlands',
+            occupation: 'Wizard',
+            description: 'A youthful-looking magician accompanied by an owl-like familiar.',
+            traits: 'Inventive, Independent',
+            background: "Born in a rundown village at the foot of Camelot, your father pulled you from a life of poverty by teaching you to read and write. Entrusted to the last scribes of Camelot's royal archives, you received an excellent education and drew the attention of Ingonde of Escalot. She taught you witchcraft and forgotten knowledge. Since that campaign, you've never been quite the same. You now walk the dangerous paths of the island, putting your formidable powers at the service of the idlers.",
+            personality: "You're nothing like the court scholars, trapped by their teachings and the mental rigidity imposed by their studies. Trained by the cunning Ingonde of Escalot, you have demonstrated boundless inventiveness and astuteness. However, your skill is compensated by your strong sense of independence: you don't take kindly to the reservations and weaknesses of your companions.",
+            ways: { combativeness: 3, creativity: 2, awareness: 1, conviction: 4, reason: 5 },
+            domains: {
+                closeCombat: 0, erudition: 3, leadership: 0, naturalEnvironment: 1, shootingThrowing: 0,
+                communication: 2, feats: 0, magic: 5, perception: 1, stealth: 0,
+                compassion: 0, healing: 1, monsters: 0, performance: 0, travel: 0,
+                craft: 0, inspiration: 2, mountedCombat: 0, religion: 0, wyrdnessMysteries: 2
+            },
+            disciplines: { sorcery: 7, tenacity: 6 },
+            advantages: ['Companion (Magical Familiar)'],
+            disadvantages: ['Old Wound'],
+            defense: 11,
+            speed: 4,
+            stamina: 10,
+            mentalResistance: 9,
+            potential: 2,
+            survivalPoints: 4,
+            magicPoints: 6,
+            magicForm: 'Sorcery',
+            magicWay: 'Reason',
+            magicBoon: "Merlin's Legacy",
+            familiar: 'Magical Familiar',
+            riches: 5,
+            equipment: ['Scholar\'s kit', 'Explorer\'s gear', 'Basic remedy', 'Travel rations'],
+            weapon: { name: 'Dagger', damage: 2 }
+        }
+    ];
+
+    // Render character cards
+    const charGrid = document.getElementById('charGrid');
+    charGrid.innerHTML = characters.map(c => `
+        <div class="char-card ${c.cardClass}" onclick="showDetail('${c.id}')">
+            <div class="char-name"><span class="char-color ${c.colorClass}"></span>${c.name}</div>
+            <div class="char-occupation">${c.occupation} &mdash; ${c.origin}</div>
+            <div class="char-desc">${c.description}</div>
+        </div>
+    `).join('');
+
+    // Show detail overlay
+    function showDetail(id) {
+        const c = characters.find(ch => ch.id === id);
+        if (!c) return;
+
+        const domainNames = {
+            closeCombat: 'Close Combat', erudition: 'Erudition', leadership: 'Leadership',
+            naturalEnvironment: 'Natural Environ.', shootingThrowing: 'Shooting & Throwing',
+            communication: 'Communication', feats: 'Feats', magic: 'Magic',
+            perception: 'Perception', stealth: 'Stealth', compassion: 'Compassion',
+            healing: 'Healing', monsters: 'Monsters', performance: 'Performance',
+            travel: 'Travel', craft: 'Craft', inspiration: 'Inspiration',
+            mountedCombat: 'Mounted Combat', religion: 'Religion', wyrdnessMysteries: 'Wyrdness Mysteries'
+        };
+
+        const domainsHtml = Object.entries(c.domains)
+            .filter(([k, v]) => v > 0)
+            .map(([k, v]) => `<div class="stat-item"><strong>${domainNames[k]}:</strong> ${v}</div>`)
+            .join('');
+
+        const discHtml = Object.entries(c.disciplines)
+            .map(([k, v]) => `<div class="stat-item"><strong>${k.charAt(0).toUpperCase() + k.slice(1)}:</strong> ${v}</div>`)
+            .join('');
+
+        const panel = document.getElementById('detailPanel');
+        panel.innerHTML = `
+            <button class="detail-close" onclick="closeDetail()">&times;</button>
+            <h2>${c.name}</h2>
+            <div class="subtitle"><span class="char-color ${c.colorClass}"></span> ${c.color} &bull; ${c.occupation} &bull; ${c.origin} &bull; Age ${c.age}</div>
+
+            <div class="detail-section">
+                <h3>Background</h3>
+                <p>${c.background}</p>
+            </div>
+
+            <div class="detail-section">
+                <h3>Personality</h3>
+                <p><strong>Traits:</strong> ${c.traits}</p>
+                <p>${c.personality}</p>
+            </div>
+
+            <div class="detail-section">
+                <h3>Ways</h3>
+                <div class="stat-grid">
+                    <div class="stat-item"><strong>Combativeness:</strong> ${c.ways.combativeness}</div>
+                    <div class="stat-item"><strong>Creativity:</strong> ${c.ways.creativity}</div>
+                    <div class="stat-item"><strong>Awareness:</strong> ${c.ways.awareness}</div>
+                    <div class="stat-item"><strong>Conviction:</strong> ${c.ways.conviction}</div>
+                    <div class="stat-item"><strong>Reason:</strong> ${c.ways.reason}</div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Domains${domainsHtml ? ' (trained)' : ''}</h3>
+                ${domainsHtml ? `<div class="stat-grid">${domainsHtml}</div>` : '<p style="color:var(--text-secondary); font-style:italic;">No domains above 0 listed in pre-gen sheet (uses Way scores for base rolls)</p>'}
+            </div>
+
+            <div class="detail-section">
+                <h3>Disciplines</h3>
+                <div class="stat-grid">${discHtml}</div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Advantages</h3>
+                <ul>${c.advantages.map(a => `<li>${a}</li>`).join('')}</ul>
+            </div>
+
+            <div class="detail-section">
+                <h3>Disadvantages</h3>
+                <ul>${c.disadvantages.map(d => `<li>${d}</li>`).join('')}</ul>
+            </div>
+
+            <div class="detail-section">
+                <h3>Derived Stats</h3>
+                <div class="stat-grid">
+                    <div class="stat-item"><strong>Defense:</strong> ${c.defense}</div>
+                    <div class="stat-item"><strong>Speed:</strong> ${c.speed}</div>
+                    <div class="stat-item"><strong>Stamina:</strong> ${c.stamina}</div>
+                    <div class="stat-item"><strong>Mental Resistance:</strong> ${c.mentalResistance}</div>
+                    <div class="stat-item"><strong>Potential:</strong> ${c.potential}</div>
+                    <div class="stat-item"><strong>Survival Points:</strong> ${c.survivalPoints}</div>
+                    <div class="stat-item"><strong>Magic Points:</strong> ${c.magicPoints}</div>
+                    <div class="stat-item"><strong>Riches:</strong> ${c.riches}</div>
+                </div>
+            </div>
+
+            ${c.magicForm ? `
+            <div class="detail-section">
+                <h3>Magic</h3>
+                <div class="stat-grid">
+                    <div class="stat-item"><strong>Form:</strong> ${c.magicForm}</div>
+                    <div class="stat-item"><strong>Associated Way:</strong> ${c.magicWay}</div>
+                    <div class="stat-item"><strong>Boon:</strong> ${c.magicBoon}</div>
+                    <div class="stat-item"><strong>Familiar:</strong> ${c.familiar}</div>
+                </div>
+            </div>` : ''}
+
+            <div class="detail-section">
+                <h3>Equipment</h3>
+                <ul>${c.equipment.map(e => `<li>${e}</li>`).join('')}</ul>
+                <p style="margin-top:0.5rem;"><strong>Weapon:</strong> ${c.weapon.name} (damage ${c.weapon.damage})</p>
+            </div>
+
+            <button class="load-btn" onclick="loadCharacter('${c.id}')">Load to Character Sheet</button>
+        `;
+
+        document.getElementById('detailOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetail() {
+        document.getElementById('detailOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close on overlay background click
+    document.getElementById('detailOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeDetail();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDetail();
+    });
+
+    // Load character to localStorage for the character sheet
+    function loadCharacter(id) {
+        const c = characters.find(ch => ch.id === id);
+        if (!c) return;
+
+        // Save in the format the character sheet's sheetLoad() expects (individual input IDs)
+        const sheetData = {
+            's-name': c.name,
+            's-age': String(c.age),
+            's-origin': c.origin,
+            's-occupation': c.occupation,
+            's-description': c.description,
+            's-color': c.color,
+            's-xp': '0',
+            's-way-aw': String(c.ways.awareness),
+            's-way-co': String(c.ways.combativeness),
+            's-way-cr': String(c.ways.creativity),
+            's-way-cv': String(c.ways.conviction),
+            's-way-re': String(c.ways.reason),
+            's-defense': String(c.defense),
+            's-speed': String(c.speed),
+            's-stamina': String(c.stamina),
+            's-mr': String(c.mentalResistance),
+            's-potential': String(c.potential),
+            's-sp-cur': String(c.survivalPoints),
+            's-sp-max': String(c.survivalPoints),
+            's-riches': c.riches + ' Wealth',
+            's-adv1': c.advantages[0] || '',
+            's-adv2': c.advantages[1] || '',
+            's-adv3': c.advantages[2] || '',
+            's-adv4': c.advantages[3] || '',
+            's-adv5': c.advantages[4] || '',
+            's-dis1': c.disadvantages[0] || '',
+            's-dis2': c.disadvantages[1] || '',
+            's-dis3': c.disadvantages[2] || '',
+            's-dis4': c.disadvantages[3] || '',
+            's-dis5': c.disadvantages[4] || '',
+            's-equip1': c.equipment.join(', '),
+            's-equip2': '',
+            's-equip3': '',
+            's-wpn1-name': c.weapon.name,
+            's-wpn1-dam': String(c.weapon.damage),
+            's-wpn2-name': c.weapon2 ? c.weapon2.name : '',
+            's-wpn2-dam': c.weapon2 ? String(c.weapon2.damage) : '',
+            's-armor1-name': '',
+            's-armor1-prot': '',
+            's-armor2-name': '',
+            's-armor2-prot': '',
+            's-stance-std-atk': String(c.ways.combativeness + (c.domains.closeCombat || 0)),
+            's-stance-std-def': String(c.defense),
+            's-stance-std-spd': String(c.speed),
+            's-stance-off-atk': String(c.ways.combativeness + (c.domains.closeCombat || 0) + c.potential),
+            's-stance-off-def': String(c.defense - c.potential),
+            's-stance-off-spd': String(c.speed),
+            's-stance-def-atk': String(c.ways.combativeness + (c.domains.closeCombat || 0) - c.potential),
+            's-stance-def-def': String(c.defense + c.potential),
+            's-stance-def-spd': String(c.speed),
+            's-stance-mov-atk': '0',
+            's-stance-mov-def': String(c.defense + c.potential),
+            's-stance-mov-spd': String(c.speed),
+            's-magic-form': c.magicForm || '',
+            's-magic-way': c.magicWay || '',
+            's-magic-boon': c.magicBoon || '',
+            's-mp-cur': String(c.magicPoints),
+            's-mp-max': String(c.magicPoints),
+            's-familiar': c.familiar || '',
+            's-torment': '',
+            's-rout': '',
+            's-quest': '',
+            's-apdp': ''
+        };
+
+        // Add domain values for circle filling
+        sheetData._domains = {};
+        const domainKeyMap = { 'close-combat':'closeCombat','erudition':'erudition','leadership':'leadership','natural-environment':'naturalEnvironment','shooting-throwing':'shootingThrowing','communication':'communication','feats':'feats','magic':'magic','perception':'perception','stealth':'stealth','compassion':'compassion','healing':'healing','monsters':'monsters','performance':'performance','travel':'travel','craft':'craft','inspiration':'inspiration','mounted-combat':'mountedCombat','religion':'religion','wyrdness-mysteries':'wyrdnessMysteries' };
+        Object.keys(domainKeyMap).forEach(function(domId) {
+            sheetData._domains[domId] = c.domains[domainKeyMap[domId]] || 0;
+        });
+
+        // Save to localStorage AND pass via URL
+        localStorage.setItem('tg-sheet', JSON.stringify(sheetData));
+
+        // Navigate with data in URL query string as backup
+        var params = new URLSearchParams();
+        params.set('char', JSON.stringify(sheetData));
+        window.location.href = 'index.html?' + params.toString() + '#tab-sheet';
+    }
+    </script>
+</body>
+</html>

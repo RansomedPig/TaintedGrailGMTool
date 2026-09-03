@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestiary - Tainted Grail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Page-specific styles. Shared chrome (palette, body, background, nav,
+           tab buttons) is inherited from styles.css to match the main tabs. */
+
+        /* These pages use <a> tags for nav; keep them looking like the button tabs. */
+        .top-nav .tab-btn { text-decoration: none; }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 2.5rem 1rem 1.5rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Difficulty legend */
+        .legend {
+            max-width: 1000px;
+            margin: 0 auto 1.5rem;
+            padding: 1rem 1.2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .legend strong { color: var(--gold); font-family: 'Cinzel', serif; }
+
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.4rem;
+            margin-top: 0.6rem;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+
+        .tokens { color: var(--accent); letter-spacing: 2px; font-size: 1rem; }
+
+        /* Search & Filter */
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            padding: 0 1rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar:focus { outline: none; border-color: var(--gold); }
+        .search-bar::placeholder { color: var(--text-secondary); }
+
+        .filter-group { margin-bottom: 0.8rem; }
+
+        .filter-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+            text-align: center;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.4rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--gold);
+            color: var(--bg-primary);
+            border-color: var(--gold);
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+        }
+
+        .card-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .card-tokens {
+            color: var(--accent);
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .card-meta span { display: flex; align-items: center; gap: 0.3rem; }
+        .card-meta strong { color: var(--text-primary); }
+
+        .card-loc {
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            background: rgba(107,143,113,0.2);
+            color: #90c896;
+            border: 1px solid var(--green);
+        }
+
+        .card-flavor {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-left: 2px solid var(--border);
+            padding-left: 0.8rem;
+        }
+
+        .card-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0.9rem 0 0.4rem;
+        }
+
+        .approach {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--border);
+            font-size: 1rem;
+        }
+
+        .approach:last-child { border-bottom: none; }
+
+        .approach .a-name { color: var(--text-primary); font-weight: 600; }
+        .approach .a-roll { color: var(--green); font-family: 'Cinzel', serif; font-size: 0.85rem; }
+
+        .stat-block {
+            background: rgba(139,58,58,0.12);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            padding: 0.7rem 0.9rem;
+            margin: 0.8rem 0;
+            font-size: 0.95rem;
+        }
+
+        .stat-block .sb-name {
+            font-family: 'Cinzel', serif;
+            color: #e07070;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-line { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; }
+        .stat-line span strong { color: var(--gold); }
+
+        .outcome {
+            font-size: 0.95rem;
+            margin-top: 0.6rem;
+            color: var(--text-primary);
+        }
+
+        .outcome .win { color: var(--green); font-weight: 600; }
+        .outcome .lose { color: #e07070; font-weight: 600; }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            font-style: italic;
+        }
+
+        /* Encounter Randomizer */
+        .randomizer {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            padding: 1.2rem 1.4rem;
+            background: rgba(37, 40, 32, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .randomizer h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem;
+            color: var(--gold);
+            margin-bottom: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rand-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.2rem;
+        }
+
+        .rand-field { display: flex; align-items: center; gap: 0.5rem; }
+
+        .rand-field label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rand-field select {
+            padding: 0.45rem 0.8rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .rand-field select:focus { outline: none; border-color: var(--gold); }
+
+        .rand-cats { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+        .rand-cat {
+            padding: 0.45rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rand-cat:hover { border-color: var(--gold); }
+
+        .rand-cat.active {
+            background: var(--accent);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        .rand-go, .rand-clear {
+            padding: 0.5rem 1.3rem;
+            border-radius: 6px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rand-go {
+            background: var(--gold);
+            color: var(--bg-primary);
+            border: 1px solid var(--gold);
+            font-weight: 600;
+        }
+
+        .rand-go:hover { filter: brightness(1.1); }
+
+        .rand-clear {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .rand-clear:hover { border-color: var(--accent); color: var(--text-primary); }
+
+        .rand-summary {
+            max-width: 1200px;
+            margin: 0 auto 1.2rem;
+            padding: 0.9rem 1.2rem;
+            background: rgba(139, 58, 58, 0.12);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            display: none;
+        }
+
+        .rand-summary.show { display: block; }
+        .rand-summary strong { color: var(--gold); }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 1.8rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .tab-btn { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="tab-buttons">
+            <a href="index.html" class="tab-btn">Reference Guide</a>
+            <a href="index.html#tab-creator" class="tab-btn">Character Creator</a>
+            <a href="index.html#tab-sheet" class="tab-btn">Character Sheet</a>
+            <a href="index.html#tab-leader" class="tab-btn">Game Leader</a>
+            <a href="decks.html" class="tab-btn">Card Decks</a>
+            <a href="bestiary.html" class="tab-btn active">Bestiary</a>
+            <a href="pregens.html" class="tab-btn">Pre-Gen Characters</a>
+            <a href="adventures.html" class="tab-btn">Adventures</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>Bestiary &amp; Encounters</h1>
+        <p>The perils of Avalon, sorted by threat &mdash; the creatures that stalk the fog and the encounters that test travelers.</p>
+    </div>
+
+    <div class="controls">
+        <div class="legend">
+            <strong>Reading Difficulty.</strong> One scale ranks every peril of Avalon. For encounters it sets the Difficulty Threshold (1D10 + Domain + Way); for creatures it reflects the Wyrdness level where they are found.
+            <div class="legend-row">
+                <span class="legend-item"><span class="tokens">&#9679;</span> Easy (8) &mdash; Wyrdness 0&ndash;1</span>
+                <span class="legend-item"><span class="tokens">&#9679;&#9679;</span> Standard (11) &mdash; Wyrdness 2</span>
+                <span class="legend-item"><span class="tokens">&#9679;&#9679;&#9679;</span> Complicated (14) &mdash; Wyrdness 3</span>
+                <span class="legend-item"><span class="tokens">&#9679;&#9679;&#9679;&#9679;</span> Difficult (17+) &mdash; Wyrdness 4</span>
+            </div>
+        </div>
+
+        <input type="text" class="search-bar" id="searchBar" placeholder="Search by name, location, approach, or ability...">
+
+        <div class="filter-group">
+            <div class="filter-label">Difficulty</div>
+            <div class="filter-buttons" id="diffFilters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="1">&#9679; Easy</button>
+                <button class="filter-btn" data-filter="2">&#9679;&#9679; Standard</button>
+                <button class="filter-btn" data-filter="3">&#9679;&#9679;&#9679; Complicated</button>
+                <button class="filter-btn" data-filter="4">&#9679;&#9679;&#9679;&#9679; Difficult</button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <div class="filter-label">Location</div>
+            <div class="filter-buttons" id="locFilters">
+                <button class="filter-btn active" data-loc="all">All</button>
+                <button class="filter-btn" data-loc="Settlement">Settlement</button>
+                <button class="filter-btn" data-loc="Road">Road</button>
+                <button class="filter-btn" data-loc="Wyrdness">Wyrdness</button>
+                <button class="filter-btn" data-loc="Creature">Creatures</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="randomizer">
+        <h2>&#9876; Encounter Randomizer</h2>
+        <div class="rand-row">
+            <div class="rand-field">
+                <label for="randPlayers">Players</label>
+                <select id="randPlayers">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div class="rand-cats" id="randCats">
+                <button class="rand-cat active" data-cat="Settlement">Settlement</button>
+                <button class="rand-cat" data-cat="Road">Road</button>
+                <button class="rand-cat" data-cat="Wyrdness">Wyrdness</button>
+                <button class="rand-cat" data-cat="Creature">Creatures</button>
+            </div>
+            <button class="rand-go" id="randGo">Randomize</button>
+            <button class="rand-clear" id="randClear">Clear</button>
+        </div>
+    </div>
+
+    <div class="rand-summary" id="randSummary"></div>
+
+    <div class="card-grid" id="cardGrid"></div>
+
+    <script src="bestiary-data.js"></script>
+</body>
+</html>
